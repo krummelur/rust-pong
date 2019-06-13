@@ -8,27 +8,34 @@ use sdl2::render::WindowCanvas;
 #[derive(Copy, Clone)]
 pub struct PlayerBase {
     score: i32,
-    position_y: f32,
-    position_x: f32,
+    position_y: i32,
+    position_x: i32,
 }
 
 impl PlayerBase {
     pub fn new() -> PlayerBase {
         PlayerBase {
             score: 0,
-            position_x: 10.0,
-            position_y: 100.0,
+            position_x: 10,
+            position_y: 100,
         }
     }
-    fn translate(&mut self, distance: f32) {
+    pub fn set_y_position(&mut self, new_position: i32) {
+        self.position_y = new_position;
+    } 
+    
+    pub fn set_x_position(&mut self, new_position: i32) {
+        self.position_x = new_position;
+    } 
+
+    pub fn translate(&mut self, distance: i32) {
         self.position_y += distance;
     }
-    fn score(&mut self) {
+    pub fn score(&mut self) {
         self.score += 1;
     }
     
     pub fn draw(self, renderer: &mut WindowCanvas) {
-    renderer.set_draw_color(Color::RGB(100, 100, 100));
     renderer.set_draw_color(Color::RGB(0, 0, 0));
     renderer.fill_rect(Rect::new(self.position_x as i32, self.position_y as i32, 10, 100)).expect("Could not draw player");
     }
@@ -47,16 +54,23 @@ impl LocalPlayer {
             player: PlayerBase::new(),
         }
     }
-    pub fn handle_input(&mut self) {
-        self.player.translate(self.input_handler.handle_input());
+
+    pub fn handle_input(&mut self) -> i32 {
+        self.input_handler.handle_input()
     }
 }
 
-struct RemotePlayer {
-    player: PlayerBase,
+pub struct RemotePlayer {
+    pub player: PlayerBase,
 }
 
-impl RemotePlayer {}
+impl RemotePlayer {
+    pub fn new() -> RemotePlayer {
+        RemotePlayer {
+            player: PlayerBase::new(),
+        }
+    }
+}
 
 struct InputHandler {
     ev_pump: sdl2::EventPump,
@@ -67,9 +81,9 @@ impl InputHandler {
         InputHandler { ev_pump: ev_pump }
     }
 
-    fn handle_input(&mut self) -> f32 {
-        let increment: f32 = 3.0;
-        let mut speed = 0.0;
+    fn handle_input(&mut self) -> i32 {
+        let increment: i32 = 3;
+        let mut speed = 0;
             for event in self.ev_pump.poll_iter() {
             if let Event::Quit { .. } = event {
                 std::process::exit(0)}
@@ -88,7 +102,7 @@ impl InputHandler {
                     Keycode::S => increment,
                     Keycode::Up  => -increment,
                     Keycode::Down  => increment,
-                    _ => 0.0
+                    _ => 0
                 }
             }
             return speed;       

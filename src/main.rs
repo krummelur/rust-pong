@@ -3,6 +3,7 @@ mod networkGame;
 mod player;
 mod server;
 mod client;
+mod number_helpers;
 use std::{thread, time};
 use sdl2::pixels::Color;
 use sdl2::EventPump;
@@ -28,18 +29,26 @@ fn main() {
         	server::start();
     });
     println!("starting client");
-    client::start();
+    let mut client = client::Client::new();
     println!("done");
     
 
 
     let (mut renderer, events) = initialize(); 
     let mut local_player = player::LocalPlayer::new(events);
+    let mut remote_player = player::RemotePlayer::new();
     
     'running: loop {
         clear(&mut renderer);
+        let player_movement = local_player.handle_input();
+        let new_game_state = client.send_message_i32(player_movement);
+        //println!("===== PLAYER POS: {:?}, {:?}, {:?}======", new_game_state.player_x_positions, new_game_state.player_y_positions, new_game_state.ball_position);
+        local_player.player.set_y_position(new_game_state.player_y_positions[0]);
+        remote_player.player.set_y_position(new_game_state.player_y_positions[1]);
+        remote_player.player.set_x_position(new_game_state.player_x_positions[1]);
+
         local_player.player.draw(&mut renderer);
-        local_player.handle_input();
+        remote_player.player.draw(&mut renderer);
         thread::sleep(time::Duration::from_millis(10));
         renderer.present();
     }

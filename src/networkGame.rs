@@ -1,15 +1,15 @@
+use std::vec::Vec;
+
 pub struct GameState{
-    pub player1_score: i32,
-    pub player2_score: i32,
-    pub player1_pos_x: i32,
-    pub player2_pos_x: i32,
-    pub player1_pos_y: i32,
-    pub player2_pos_y: i32, 
+    pub ball_position: [i32; 2],
+    pub player_x_positions: [i32; 2],
+    pub player_y_positions: [i32; 2],
+  
 }
 
 impl GameState {
     pub fn new() -> GameState {
-        GameState { player1_score: 0, player2_score: 0, player1_pos_x: 0, player2_pos_x: 0, player1_pos_y: 0, player2_pos_y: 0}
+        GameState { ball_position: [200,200], player_x_positions: [20, 380],  player_y_positions: [0,0]}
     }
     pub fn testFunction(self) {
         println!("called function in GameState");
