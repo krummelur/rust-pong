@@ -24,24 +24,26 @@ impl GameState {
 ///
 /// * `message` - The message containing the serialized GameState
 pub fn deserialize(message: [u8; MESSAGE_LEN]) -> GameState {
-    let player_x_positions_ = match as_i32(&message[32..36]) {
+    let player_x_positions = match as_i32(&message[32..36]) {
             0 => [as_i32(&message[0..4]),as_i32(&message[4..8])],
             1 => [as_i32(&message[4..8]),as_i32(&message[0..4])],
             _ => panic!("no player index received from server")
         };
 
-    let player_y_positions_ = match as_i32(&message[32..36]) { 
+    let player_y_positions = match as_i32(&message[32..36]) { 
         0 => [as_i32(&message[8..12]),as_i32(&message[12..16])],
         1 => [as_i32(&message[12..16]),as_i32(&message[8..12])],
         _ => panic!("no player index received from server")
     };
 
+    let scores = [as_i32(&message[24..28]), as_i32(&message[28..32])];
+
     let ball_position = [as_i32(&message[16..20]),as_i32(&message[20..24])];
     GameState {
         ball_position: ball_position,
-        player_x_positions: player_x_positions_,
-        player_y_positions: player_y_positions_,
-        scores: [0,0]
+        player_x_positions: player_x_positions,
+        player_y_positions: player_y_positions,
+        scores: scores
     }
 }
 /// Returns a serialized gamestate from GameState as array of u8  

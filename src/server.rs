@@ -1,3 +1,4 @@
+extern crate rand;
 use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
@@ -31,16 +32,36 @@ pub fn start() {
 }
 
 fn master_loop(game_state: Arc<Mutex<GameState>>) {
+    let mut rng = rand::thread_rng();
     let mut ball_vel: [f32;2] = [-2.0, -1.0];
     let mut_g_s = game_state.lock().unwrap();
     let mut ball_exact_pos: [f32;2] = [mut_g_s.ball_position[0] as f32, mut_g_s.ball_position[1] as f32];
     drop(mut_g_s);
     loop {
         let mut mut_g_s = game_state.lock().unwrap();
-        if game_objects::is_colliding(mut_g_s.ball_position, [mut_g_s.player_x_positions[0], mut_g_s.player_y_positions[0]], [BALL_SIZE, BALL_SIZE], [PADDLE_WIDTH, PADDLE_HEIGHT]) ||
-            game_objects::is_colliding(mut_g_s.ball_position, [mut_g_s.player_x_positions[1], mut_g_s.player_y_positions[1]], [BALL_SIZE, BALL_SIZE], [PADDLE_WIDTH, PADDLE_HEIGHT])
-            {
+        let collision_p1 = game_objects::is_colliding(mut_g_s.ball_position, 
+                            [mut_g_s.player_x_positions[0], mut_g_s.player_y_positions[0]], 
+                            [BALL_SIZE, BALL_SIZE], 
+                            [PADDLE_WIDTH, PADDLE_HEIGHT]);
+        let collision_p2 = game_objects::is_colliding(mut_g_s.ball_position,
+                            [mut_g_s.player_x_positions[1], mut_g_s.player_y_positions[1]],
+                            [BALL_SIZE, BALL_SIZE],
+                            [PADDLE_WIDTH, PADDLE_HEIGHT]);
+
+        if collision_p1.0 {
                 ball_vel[0] = ball_vel[0]*-1.0;
+                println!("col: {}", collision_p1.1);
+                ball_exact_pos[0] = ball_exact_pos[0] + collision_p1.1;
+        }
+         else if collision_p2.0 {
+                ball_vel[0] = ball_vel[0]*-1.0;
+                println!("col: {}", collision_p2.1);
+                ball_exact_pos[0] = ball_exact_pos[0] - collision_p2.1;
+         }
+
+
+             
+            {
             }
         
         for i in 0..2 {
@@ -50,13 +71,15 @@ fn master_loop(game_state: Arc<Mutex<GameState>>) {
 
         let mut scored = false;
         if ball_exact_pos[0] < 0.0 {
-            mut_g_s.scores[0] = mut_g_s.scores[0]+1;
+            mut_g_s.scores[1] = mut_g_s.scores[1]+1;
             scored = true;
+            ball_vel = [rand::random::<f32>()*-2.0-1.0, (rand::random::<f32>()-1.0)*3.0+1.0];
         }
 
         if ball_exact_pos[0] > (constants::WINDOW_WIDTH - BALL_SIZE) as f32 {
             mut_g_s.scores[0] = mut_g_s.scores[0]+1;
             scored = true;
+            ball_vel = [rand::random::<f32>()*2.0+1.0, (rand::random::<f32>()-1.0)*3.0+1.0];
         }
 
         if ball_exact_pos[1] <= 0.0 || ball_exact_pos[1] > (constants::WINDOW_HEIGHT-BALL_SIZE) as f32 {

@@ -1,9 +1,7 @@
-use std::net::{TcpListener, TcpStream};
-use std::thread;
-use std::io::{self, Read, Error, Write, BufReader, BufRead};
+use std::net::{TcpStream};
+use std::io::{self, Read, Write};
 use protocol::{self, GameState};
-use std::mem::transmute;
-use number_helpers::{i32_to_array_of_u8, as_i32};
+use number_helpers::{i32_to_array_of_u8};
 const SERVER_ADDR: &'static str = "127.0.0.1:4545";
 
 pub struct Client {
