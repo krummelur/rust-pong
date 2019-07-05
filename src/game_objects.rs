@@ -4,6 +4,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
 use sdl2::render::WindowCanvas;
+use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
 
 #[derive(Copy, Clone)]
 pub struct PlayerBase {
@@ -13,6 +14,7 @@ pub struct PlayerBase {
 }
 
 impl PlayerBase {
+    /// Returns a new PlayerBase instance
     pub fn new() -> PlayerBase {
         PlayerBase {
             score: 0,
@@ -20,24 +22,35 @@ impl PlayerBase {
             position_y: 100,
         }
     }
+
+    /// Sets a new position_y
     pub fn set_y_position(&mut self, new_position: i32) {
         self.position_y = new_position;
     } 
     
+    /// Sets a new position_x
     pub fn set_x_position(&mut self, new_position: i32) {
         self.position_x = new_position;
     } 
 
+    /// Sets a new position_y from a desired move distance
     pub fn translate(&mut self, distance: i32) {
         self.position_y += distance;
     }
+
+    /// Increments the players score
     pub fn score(&mut self) {
         self.score += 1;
     }
     
+    /// Draws the player onto the canvas
+    /// 
+    /// # Arguments
+    /// 
+    /// * `renderer` - a mutable reference to the canvas to draw onto
     pub fn draw(self, renderer: &mut WindowCanvas) {
     renderer.set_draw_color(Color::RGB(0, 0, 0));
-    renderer.fill_rect(Rect::new(self.position_x as i32, self.position_y as i32, 10, 100)).expect("Could not draw player");
+    renderer.fill_rect(Rect::new(self.position_x as i32, self.position_y as i32, PADDLE_WIDTH, PADDLE_HEIGHT)).expect("Could not draw player");
     }
 }
 
@@ -47,17 +60,29 @@ pub struct Ball {
 }
 
 impl Ball {
+    /// Returns a new Ball instance
     pub fn new() -> Ball {
         Ball {
             position: [200,200]
         }
     }
+
+    /// Sets a new position
+    ///  
+    /// # Arguments
+    /// 
+    /// * `new_position` - an array of 2 32-bit integers representing the new x, and y-positions of the ball
     pub fn set_position(&mut self, new_position: [i32;2]) {
         self.position = new_position;
     } 
+    /// Draws the ball onto the canvas
+    /// 
+    /// # Arguments
+    /// 
+    /// * `renderer` - a mutable reference to the canvas to draw onto
     pub fn draw(self, renderer: &mut WindowCanvas) {
         renderer.set_draw_color(Color::RGB(0, 0, 0));
-        renderer.fill_rect(Rect::new(self.position[0], self.position[1], 20, 20)).expect("Could not draw player");
+        renderer.fill_rect(Rect::new(self.position[0], self.position[1], BALL_SIZE, BALL_SIZE)).expect("Could not draw player");
     }
 }
 
@@ -67,6 +92,7 @@ pub struct LocalPlayer {
 }
 
 impl LocalPlayer {
+    /// Returns a new LocalPlayer reference
     pub fn new(ev_pump: sdl2::EventPump) -> LocalPlayer {
         LocalPlayer {
             input_handler: InputHandler::new(ev_pump),
@@ -74,6 +100,7 @@ impl LocalPlayer {
         }
     }
 
+    /// Checks the keyboard input and updates the players position accordingly
     pub fn handle_input(&mut self) -> i32 {
         self.input_handler.handle_input()
     }
@@ -84,6 +111,7 @@ pub struct RemotePlayer {
 }
 
 impl RemotePlayer {
+    /// Returns a new RemotePlayer instance
     pub fn new() -> RemotePlayer {
         RemotePlayer {
             player: PlayerBase::new(),

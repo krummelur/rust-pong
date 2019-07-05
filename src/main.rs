@@ -4,6 +4,8 @@ mod game_objects;
 mod server;
 mod client;
 mod number_helpers;
+mod constants;
+use constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use std::{thread, time};
 use sdl2::pixels::Color;
 use sdl2::EventPump;
@@ -14,7 +16,7 @@ fn initialize() -> (sdl2::render::WindowCanvas, EventPump) {
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem
-        .window("pong-game", 400, 400)
+        .window("pong-game", WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
         .opengl()
         .build()
