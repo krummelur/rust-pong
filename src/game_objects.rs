@@ -52,6 +52,9 @@ impl Ball {
             position: [200,200]
         }
     }
+    pub fn set_position(&mut self, new_position: [i32;2]) {
+        self.position = new_position;
+    } 
     pub fn draw(self, renderer: &mut WindowCanvas) {
         renderer.set_draw_color(Color::RGB(0, 0, 0));
         renderer.fill_rect(Rect::new(self.position[0], self.position[1], 20, 20)).expect("Could not draw player");

@@ -23,8 +23,7 @@ pub fn deserialize(message: [u8; MESSAGE_LEN]) -> GameState {
         };
 
     let player_x_positions = [as_i32(&message[0..4]),as_i32(&message[4..8])];
-    //let ball_position = [as_i32(&buffer[16..20]),as_i32(&buffer[20..24])];
-    let ball_position = [as_i32(&message[24..28]),as_i32(&message[28..32])];
+    let ball_position = [as_i32(&message[16..20]),as_i32(&message[20..24])];
     GameState {
         ball_position: ball_position,
         player_x_positions: player_x_positions,

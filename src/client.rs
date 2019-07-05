@@ -19,11 +19,6 @@ impl Client {
         self.stream.write(&i32_to_array_of_u8(message)).expect("there was an error sending message to server");
         let mut buffer = [0; 9*4];
         let bytes_read = self.stream.read(&mut buffer).expect("could not read from stream");
-        println!("received from server: [");
-        for i in 0..bytes_read {
-        print!("{},", buffer[i]);
-        }
-        println!("]");
         protocol::deserialize(buffer)
     }
 }

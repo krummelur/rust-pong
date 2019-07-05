@@ -37,7 +37,7 @@ fn main() {
     let (mut renderer, events) = initialize(); 
     let mut local_player = game_objects::LocalPlayer::new(events);
     let mut remote_player = game_objects::RemotePlayer::new();
-    let ball = game_objects::Ball::new();
+    let mut ball = game_objects::Ball::new();
     
     'running: loop {
         clear(&mut renderer);
@@ -47,7 +47,7 @@ fn main() {
         local_player.player.set_y_position(new_game_state.player_y_positions[0]);
         remote_player.player.set_y_position(new_game_state.player_y_positions[1]);
         remote_player.player.set_x_position(new_game_state.player_x_positions[1]);
-
+        ball.set_position(new_game_state.ball_position);
         local_player.player.draw(&mut renderer);
         remote_player.player.draw(&mut renderer);
         ball.draw(&mut renderer);
