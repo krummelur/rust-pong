@@ -6,7 +6,7 @@ use std::io::{Read, Error, Write};
 use game_objects;
 use constants::{self, BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
 use protocol::{self, GameState};
-use number_helpers::{i32_to_array_of_u8, as_i32};
+use number_helpers::{as_i32};
 
 ///starts listening on port 4545 handles incoming connections in new threads
 pub fn start() {
@@ -32,7 +32,6 @@ pub fn start() {
 }
 
 fn master_loop(game_state: Arc<Mutex<GameState>>) {
-    let mut rng = rand::thread_rng();
     let mut ball_vel: [f32;2] = [-2.0, -1.0];
     let mut_g_s = game_state.lock().unwrap();
     let mut ball_exact_pos: [f32;2] = [mut_g_s.ball_position[0] as f32, mut_g_s.ball_position[1] as f32];
@@ -53,17 +52,11 @@ fn master_loop(game_state: Arc<Mutex<GameState>>) {
                 println!("col: {}", collision_p1.1);
                 ball_exact_pos[0] = ball_exact_pos[0] + collision_p1.1;
         }
-         else if collision_p2.0 {
+        else if collision_p2.0 {
                 ball_vel[0] = ball_vel[0]*-1.0;
                 println!("col: {}", collision_p2.1);
                 ball_exact_pos[0] = ball_exact_pos[0] - collision_p2.1;
-         }
-
-
-             
-            {
-            }
-        
+        }
         for i in 0..2 {
             ball_exact_pos[i] += ball_vel[i];
             mut_g_s.ball_position[i] = ball_exact_pos[i] as i32;

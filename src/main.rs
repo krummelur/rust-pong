@@ -7,9 +7,7 @@ mod number_helpers;
 mod constants;
 use constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use std::{thread, time};
-use sdl2::{pixels::Color, EventPump, render::WindowCanvas, render::TextureQuery, ttf};
-//use sdl2::EventPump;
-//use sdl2::render::WindowCanvas;
+use sdl2::{pixels::Color, EventPump, render::WindowCanvas, ttf};
 
 const FONT_PATH: &str = "retro_gaming.ttf";
 

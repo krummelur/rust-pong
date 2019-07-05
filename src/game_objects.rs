@@ -17,6 +17,7 @@ use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
 pub fn is_colliding(obj1_pos: [i32;2], obj2_pos: [i32;2], obj1_dim: [u32;2], obj2_dim: [u32;2]) -> (bool, f32) {
     let distance_x: f32 = (obj1_pos[0] as f32 - obj2_pos[0] as f32).abs();
     let mut leftmost_obj_dim = obj1_dim;
+    
     if obj1_pos[0] > obj2_pos[0] {
         leftmost_obj_dim = obj2_dim;
     }
@@ -105,6 +106,7 @@ impl Ball {
     pub fn set_position(&mut self, new_position: [i32;2]) {
         self.position = new_position;
     } 
+   
     /// Draws the ball onto the canvas
     /// 
     /// # Arguments
@@ -184,5 +186,4 @@ impl InputHandler {
             }
             return speed;       
     }
-
 }

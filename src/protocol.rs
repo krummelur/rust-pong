@@ -1,7 +1,6 @@
-const MESSAGE_LEN: usize = (9*4);
-use std::vec::Vec;
 use number_helpers::{as_i32, i32_to_array_of_u8};
-use constants;
+
+const MESSAGE_LEN: usize = (9*4);
 
 #[derive(Copy, Clone)]
 pub struct GameState{
@@ -46,6 +45,7 @@ pub fn deserialize(message: [u8; MESSAGE_LEN]) -> GameState {
         scores: scores
     }
 }
+
 /// Returns a serialized gamestate from GameState as array of u8  
 /// 
 /// # Arguments
