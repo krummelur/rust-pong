@@ -2,7 +2,7 @@ use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::io::{Read, Error, Write};
-use networkGame::GameState;
+use protocol::GameState;
 use number_helpers::{i32_to_array_of_u8, as_i32};
 
 ///starts listening on port 4545 handles incoming connections in new threads
@@ -38,7 +38,7 @@ pub fn start() {
     }
 }
 
-fn handle_incoming(mut stream: TcpStream, game_state: Arc<Mutex<GameState>>, player_index: usize) -> Result<([u8; 1024], usize), Error> {
+fn handle_incoming(mut stream: TcpStream, game_state: Arc<Mutex<GameState>>, player_index: i32) -> Result<([u8; 1024], usize), Error> {
     println!("A connection from: {}", stream.peer_addr()?);
     loop {    
     let mut buffer = [0; 1024];
@@ -49,8 +49,8 @@ fn handle_incoming(mut stream: TcpStream, game_state: Arc<Mutex<GameState>>, pla
         println!("SERVER: MESSAGE RECEIVED: {}, message length: {}", message_as_integer, bytes_read);
         let mut mutable_game_state = game_state.lock().unwrap();
         //println!("state: {}", mutable_game_state.player1_pos_x);
-        mutable_game_state.player_y_positions[player_index] += message_as_integer;
-        let mut arr_game_state: [u8; 6*4] = [0; 6*4];
+        mutable_game_state.player_y_positions[player_index as usize] += message_as_integer;
+        let mut arr_game_state: [u8; 9*4] = [0; 9*4];
             //let arr_i32_u8 = i32_to_array_of_u8(arr_game_state[i]);
             let arr_game_state_unflat = [            
             i32_to_array_of_u8(mutable_game_state.player_x_positions[0]),
@@ -58,9 +58,13 @@ fn handle_incoming(mut stream: TcpStream, game_state: Arc<Mutex<GameState>>, pla
             i32_to_array_of_u8(mutable_game_state.player_y_positions[0]),
             i32_to_array_of_u8(mutable_game_state.player_y_positions[1]),
             i32_to_array_of_u8(mutable_game_state.ball_position[0]),
-            i32_to_array_of_u8(mutable_game_state.ball_position[1])]; 
+            i32_to_array_of_u8(mutable_game_state.ball_position[1]),
+            i32_to_array_of_u8(mutable_game_state.scores[0]),
+            i32_to_array_of_u8(mutable_game_state.scores[1]),
+            i32_to_array_of_u8(player_index),
+            ]; 
         drop(mutable_game_state);
-        //println!("UNFLAT: {:?}", arr_game_state_unflat);
+        println!("UNFLAT: {:?}", arr_game_state_unflat);
             for i in 0..4 {
                 arr_game_state[i] = arr_game_state_unflat[0][i];
                 arr_game_state[4+i] = arr_game_state_unflat[1][i];
@@ -68,6 +72,9 @@ fn handle_incoming(mut stream: TcpStream, game_state: Arc<Mutex<GameState>>, pla
                 arr_game_state[12+i] = arr_game_state_unflat[3][i];
                 arr_game_state[16+i] = arr_game_state_unflat[4][i];
                 arr_game_state[20+i] = arr_game_state_unflat[5][i];
+                arr_game_state[24+i] = arr_game_state_unflat[6][i];
+                arr_game_state[28+i] = arr_game_state_unflat[7][i];
+                arr_game_state[32+i] = arr_game_state_unflat[8][i];
             }
             //println!("FLAT: {:?}", arr_game_state);
             stream.write(&arr_game_state).expect("Could not write response to stream");

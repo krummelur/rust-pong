@@ -1,6 +1,6 @@
 extern crate sdl2;
-mod networkGame;
-mod player;
+mod protocol;
+mod game_objects;
 mod server;
 mod client;
 mod number_helpers;
@@ -35,8 +35,9 @@ fn main() {
 
 
     let (mut renderer, events) = initialize(); 
-    let mut local_player = player::LocalPlayer::new(events);
-    let mut remote_player = player::RemotePlayer::new();
+    let mut local_player = game_objects::LocalPlayer::new(events);
+    let mut remote_player = game_objects::RemotePlayer::new();
+    let ball = game_objects::Ball::new();
     
     'running: loop {
         clear(&mut renderer);
@@ -49,6 +50,7 @@ fn main() {
 
         local_player.player.draw(&mut renderer);
         remote_player.player.draw(&mut renderer);
+        ball.draw(&mut renderer);
         thread::sleep(time::Duration::from_millis(10));
         renderer.present();
     }
