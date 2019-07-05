@@ -2,6 +2,8 @@ use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
 use std::io::{Read, Error, Write};
+use game_objects;
+use constants::{self, BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
 use protocol::{self, GameState};
 use number_helpers::{i32_to_array_of_u8, as_i32};
 
@@ -28,19 +30,52 @@ pub fn start() {
     }
 }
 
-fn master_loop(mut game_state: Arc<Mutex<GameState>>) {
-    let mut ball_vel: [f32;2] = [0.5;2];
+fn master_loop(game_state: Arc<Mutex<GameState>>) {
+    let mut ball_vel: [f32;2] = [-2.0, -1.0];
     let mut_g_s = game_state.lock().unwrap();
     let mut ball_exact_pos: [f32;2] = [mut_g_s.ball_position[0] as f32, mut_g_s.ball_position[1] as f32];
     drop(mut_g_s);
     loop {
         let mut mut_g_s = game_state.lock().unwrap();
+        if game_objects::is_colliding(mut_g_s.ball_position, [mut_g_s.player_x_positions[0], mut_g_s.player_y_positions[0]], [BALL_SIZE, BALL_SIZE], [PADDLE_WIDTH, PADDLE_HEIGHT]) ||
+            game_objects::is_colliding(mut_g_s.ball_position, [mut_g_s.player_x_positions[1], mut_g_s.player_y_positions[1]], [BALL_SIZE, BALL_SIZE], [PADDLE_WIDTH, PADDLE_HEIGHT])
+            {
+                ball_vel[0] = ball_vel[0]*-1.0;
+            }
+        
         for i in 0..2 {
             ball_exact_pos[i] += ball_vel[i];
             mut_g_s.ball_position[i] = ball_exact_pos[i] as i32;
         }
+
+        let mut scored = false;
+        if ball_exact_pos[0] < 0.0 {
+            mut_g_s.scores[0] = mut_g_s.scores[0]+1;
+            scored = true;
+        }
+
+        if ball_exact_pos[0] > (constants::WINDOW_WIDTH - BALL_SIZE) as f32 {
+            mut_g_s.scores[0] = mut_g_s.scores[0]+1;
+            scored = true;
+        }
+
+        if ball_exact_pos[1] <= 0.0 || ball_exact_pos[1] > (constants::WINDOW_HEIGHT-BALL_SIZE) as f32 {
+            ball_vel[1] = ball_vel[1]*-1.0;
+        }
+
+        if scored {
+            ball_exact_pos = [(constants::WINDOW_WIDTH as f32)/2.0, (constants::WINDOW_HEIGHT as f32)/2.0];
+            for i in 0..2 {
+                ball_exact_pos[i] += ball_vel[i];
+                mut_g_s.ball_position[i] = ball_exact_pos[i] as i32;
+            }
+        }
+        //mut_g_s.player_y_positions[0] = ball_exact_pos[1] as i32;
         drop(mut_g_s);
-        thread::sleep(time::Duration::from_millis(10));
+        match scored {
+        true => thread::sleep(time::Duration::from_millis(1000)),
+        false => thread::sleep(time::Duration::from_millis(10)),
+        }
     }
 }
 

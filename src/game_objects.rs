@@ -6,6 +6,36 @@ use std::collections::HashSet;
 use sdl2::render::WindowCanvas;
 use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
 
+/// Returns true if two objects are encroaching
+///     
+/// # Arguments
+/// 
+/// * `obj1_pos` - an array with x, y positions of the 1st object
+/// * `obj2_pos` - an array with x, y positions of the 2nd object
+/// * `obj1_dim` - an array with x, y dimensions of the 1st object
+/// * `obj2_dim` - an array with x, y dimensions of the 2nd object
+pub fn is_colliding(obj1_pos: [i32;2], obj2_pos: [i32;2], obj1_dim: [u32;2], obj2_dim: [u32;2]) -> bool {
+    let distance_x = (obj1_pos[0] - obj2_pos[0]).abs();
+    let mut leftmost_obj_dim = obj1_dim;
+    if obj1_pos[0] > obj2_pos[0] {
+        leftmost_obj_dim = obj2_dim;
+    }
+
+    if distance_x < leftmost_obj_dim[0] as i32 {
+        let distance_y = (obj1_pos[1] - obj2_pos[1]).abs();
+        let mut uppermost_obj_dim = obj1_dim;
+        if obj1_pos[1] > obj2_pos[1] {
+            uppermost_obj_dim = obj2_dim;
+        }
+        if distance_y < uppermost_obj_dim[1] as i32 {
+            println!("leftmost: {:?}", leftmost_obj_dim);
+            println!("Distance_x: {}", distance_x);
+            return true;
+        }
+    }
+    false
+}
+
 #[derive(Copy, Clone)]
 pub struct PlayerBase {
     score: i32,

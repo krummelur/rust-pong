@@ -46,9 +46,10 @@ fn main() {
         let player_movement = local_player.handle_input();
         let new_game_state = client.send_message_i32(player_movement);
         //println!("===== PLAYER POS: {:?}, {:?}, {:?}======", new_game_state.player_x_positions, new_game_state.player_y_positions, new_game_state.ball_position);
+        local_player.player.set_x_position(new_game_state.player_x_positions[0]);
         local_player.player.set_y_position(new_game_state.player_y_positions[0]);
-        remote_player.player.set_y_position(new_game_state.player_y_positions[1]);
         remote_player.player.set_x_position(new_game_state.player_x_positions[1]);
+        remote_player.player.set_y_position(new_game_state.player_y_positions[1]);
         ball.set_position(new_game_state.ball_position);
         local_player.player.draw(&mut renderer);
         remote_player.player.draw(&mut renderer);
