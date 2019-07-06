@@ -4,7 +4,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::collections::HashSet;
 use sdl2::render::WindowCanvas;
-use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH};
+use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH, SIG_RESET};
 
 /// Returns true if two objects are encroaching
 ///     
@@ -29,8 +29,6 @@ pub fn is_colliding(obj1_pos: [i32;2], obj2_pos: [i32;2], obj1_dim: [u32;2], obj
             uppermost_obj_dim = obj2_dim;
         }
         if distance_y < uppermost_obj_dim[1] as i32 {
-            println!("leftmost: {:?}", leftmost_obj_dim);
-            println!("Distance_x: {}", distance_x);
             return (true, leftmost_obj_dim[0] as f32 - distance_x);
         }
     }
@@ -39,7 +37,6 @@ pub fn is_colliding(obj1_pos: [i32;2], obj2_pos: [i32;2], obj1_dim: [u32;2], obj
 
 #[derive(Copy, Clone)]
 pub struct PlayerBase {
-    score: i32,
     position_y: i32,
     position_x: i32,
 }
@@ -48,7 +45,6 @@ impl PlayerBase {
     /// Returns a new PlayerBase instance
     pub fn new() -> PlayerBase {
         PlayerBase {
-            score: 0,
             position_x: 10,
             position_y: 100,
         }
@@ -64,16 +60,6 @@ impl PlayerBase {
         self.position_x = new_position;
     } 
 
-    /// Sets a new position_y from a desired move distance
-    pub fn translate(&mut self, distance: i32) {
-        self.position_y += distance;
-    }
-
-    /// Increments the players score
-    pub fn score(&mut self) {
-        self.score += 1;
-    }
-    
     /// Draws the player onto the canvas
     /// 
     /// # Arguments
@@ -162,28 +148,32 @@ impl InputHandler {
 
     fn handle_input(&mut self) -> i32 {
         let increment: i32 = 3;
-        let mut speed = 0;
-            for event in self.ev_pump.poll_iter() {
+        let mut message = 0;
+        for event in self.ev_pump.poll_iter() {
             if let Event::Quit { .. } = event {
-                std::process::exit(0)}
-            };
-
-            let keys: HashSet<sdl2::keyboard::Keycode> = self
-                .ev_pump
-                .keyboard_state()
-                .pressed_scancodes()
-                .filter_map(Keycode::from_scancode)
-                .collect();
-
-            for keycode in &keys {
-                speed += match keycode {
-                    Keycode::W  => -increment,
-                    Keycode::S => increment,
-                    Keycode::Up  => -increment,
-                    Keycode::Down  => increment,
-                    _ => 0
-                }
+                std::process::exit(0)
             }
-            return speed;       
+        };
+
+        let keys: HashSet<sdl2::keyboard::Keycode> = self
+            .ev_pump
+            .keyboard_state()
+            .pressed_scancodes()
+            .filter_map(Keycode::from_scancode)
+            .collect();
+
+        for keycode in &keys {
+            message += match keycode {
+                Keycode::W  => -increment,
+                Keycode::S => increment,
+                Keycode::Up  => -increment,
+                Keycode::Down  => increment,
+                _ => 0
+            }
+        }
+        if keys.contains(&Keycode::P) {
+            message = SIG_RESET;   
+        }
+        message       
     }
 }

@@ -6,10 +6,12 @@ mod client;
 mod number_helpers;
 mod constants;
 use constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
-use std::{thread, time};
+use std::{env, thread, time};
 use sdl2::{pixels::Color, EventPump, render::WindowCanvas, ttf};
 
 const FONT_PATH: &str = "retro_gaming.ttf";
+
+
 
 fn initialize<'a ,'b>() -> (sdl2::render::WindowCanvas, EventPump, ttf::Sdl2TtfContext) {
     let sdl_context = sdl2::init().unwrap();
@@ -27,13 +29,20 @@ fn initialize<'a ,'b>() -> (sdl2::render::WindowCanvas, EventPump, ttf::Sdl2TtfC
 }
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() == 0 {
+        panic!("NO SERVER ADDRESS SUPPLIED");
+    }
+    println!("bin location: {}", args[0]);
+    let remoteAddress = &args[args.len()-1];
     println!("starting server");
     let server_thread = thread::spawn(move || {    
         	server::start();
     });
+    /*
+    */
     println!("starting client");
-    let mut client = client::Client::new();
-    println!("done");
+    let mut client = client::Client::new(remoteAddress);
     
     let (mut renderer, events, ttf_context) = initialize();
     let mut local_player = game_objects::LocalPlayer::new(events);

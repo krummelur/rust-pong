@@ -28,7 +28,7 @@
         {
             "label": "RUN PROJECT",
             "type": "shell",
-            "command": "cargo run",
+            "command": "cargo run -- 127.0.0.1:4545",
             "problemMatcher": [
                 "$rustc"
             ],

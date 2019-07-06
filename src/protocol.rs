@@ -15,6 +15,9 @@ impl GameState {
     pub fn new() -> GameState {
         GameState { ball_position: [200,200], player_x_positions: [20, 380],  player_y_positions: [0,0], scores: [0,0]}
     }
+    pub fn reset(&mut self) -> () {
+         self.ball_position = [200,200]; self.player_x_positions = [20, 380]; self.player_y_positions = [0,0]; self.scores = [0,0];
+    }
 }
 
 /// Returns a new GameState instance deserialized from a u8 Array
@@ -64,16 +67,16 @@ pub fn serialize(game_state: GameState, player_index: i32) -> [u8; MESSAGE_LEN] 
         i32_to_array_of_u8(game_state.scores[1]),
         i32_to_array_of_u8(player_index),
         ]; 
-        for i in 0..4 {
-            arr_game_state[i] = arr_game_state_unflat[0][i];
-            arr_game_state[4+i] = arr_game_state_unflat[1][i];
-            arr_game_state[8+i] = arr_game_state_unflat[2][i];
-            arr_game_state[12+i] = arr_game_state_unflat[3][i];
-            arr_game_state[16+i] = arr_game_state_unflat[4][i];
-            arr_game_state[20+i] = arr_game_state_unflat[5][i];
-            arr_game_state[24+i] = arr_game_state_unflat[6][i];
-            arr_game_state[28+i] = arr_game_state_unflat[7][i];
-            arr_game_state[32+i] = arr_game_state_unflat[8][i];
-        }
-        arr_game_state
+    for i in 0..4 {
+        arr_game_state[i] = arr_game_state_unflat[0][i];
+        arr_game_state[4+i] = arr_game_state_unflat[1][i];
+        arr_game_state[8+i] = arr_game_state_unflat[2][i];
+        arr_game_state[12+i] = arr_game_state_unflat[3][i];
+        arr_game_state[16+i] = arr_game_state_unflat[4][i];
+        arr_game_state[20+i] = arr_game_state_unflat[5][i];
+        arr_game_state[24+i] = arr_game_state_unflat[6][i];
+        arr_game_state[28+i] = arr_game_state_unflat[7][i];
+        arr_game_state[32+i] = arr_game_state_unflat[8][i];
+    }
+    arr_game_state
 }
