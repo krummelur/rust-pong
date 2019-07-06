@@ -1,16 +1,19 @@
 extern crate rand;
+#[path = "../game_objects.rs"] mod game_objects;
+#[path = "../constants.rs"] mod constants;  
+#[path = "../protocol.rs"] mod protocol;
+#[path = "../number_helpers.rs"] mod number_helpers;  
 use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
 use std::io::{Read, Error, Write};
-use game_objects;
-use constants::{self, BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH, SIG_RESET};
-use protocol::{self, GameState};
+use constants::{BALL_SIZE, PADDLE_HEIGHT, PADDLE_WIDTH, SIG_RESET};
+use protocol::{GameState};
 use number_helpers::{as_i32};
 use std::sync::atomic::{AtomicBool};
 
 ///starts listening on port 4545 handles incoming connections in new threads
-pub fn start() {
+pub fn main() {
     let game_reset_requested = Arc::new(Mutex::new(AtomicBool::new(true)));
     let game_state = Arc::new(Mutex::new(GameState::new()));
     let listener = TcpListener::bind("0.0.0.0:4545").expect("could not bind tcpListener");

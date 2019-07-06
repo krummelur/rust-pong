@@ -1,10 +1,10 @@
 extern crate sdl2;
-mod protocol;
-mod game_objects;
-mod server;
+
+#[path = "../protocol.rs"]          mod protocol;
+#[path = "../game_objects.rs"]      mod game_objects;
+#[path = "../number_helpers.rs"]    mod number_helpers;
+#[path = "../constants.rs"]         mod constants;
 mod client;
-mod number_helpers;
-mod constants;
 use constants::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use std::{env, thread, time};
 use sdl2::{pixels::Color, EventPump, render::WindowCanvas, ttf};
@@ -35,11 +35,11 @@ fn main() {
     }
     println!("bin location: {}", args[0]);
     let remoteAddress = &args[args.len()-1];
+    /*
     println!("starting server");
     let server_thread = thread::spawn(move || {    
         	server::start();
     });
-    /*
     */
     println!("starting client");
     let mut client = client::Client::new(remoteAddress);

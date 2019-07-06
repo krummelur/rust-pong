@@ -8,10 +8,10 @@ features = ["ttf"]
 [dependencies]
 rand = "0.7.0"
 
-#[[bin]]
-#name = "server"
-#path = "src/daemon/bin/main.rs"
+[[bin]]
+name = "server"
+path = "src/server/server.rs"
 
-#[[bin]]
-#name = "client"
-#path = "src/client/bin/main.rs"
+[[bin]]
+name = "client"
+path = "src/client/main.rs"
