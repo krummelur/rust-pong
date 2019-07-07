@@ -59,10 +59,12 @@ fn master_loop(game_state: Arc<Mutex<GameState>>, should_reset: Arc<Mutex<Atomic
 
                 if collision_p1.0 {
                     ball_vel[0] = ball_vel[0]*-1.0;
+                    ball_vel[1] = ball_vel[1]+((rand::random::<f32>()-1.0)*3.0);
                     ball_exact_pos[0] = ball_exact_pos[0] + collision_p1.1;
                 }
                 else if collision_p2.0 {
                     ball_vel[0] = ball_vel[0]*-1.0;
+                    ball_vel[1] = ball_vel[1]+((rand::random::<f32>()-1.0)*3.0);
                     ball_exact_pos[0] = ball_exact_pos[0] - collision_p2.1;
                 }
                 for i in 0..2 {
@@ -73,13 +75,13 @@ fn master_loop(game_state: Arc<Mutex<GameState>>, should_reset: Arc<Mutex<Atomic
                 if ball_exact_pos[0] < 0.0 {
                     mut_g_s.scores[1] = mut_g_s.scores[1]+1;
                     scored = true;
-                    ball_vel = [rand::random::<f32>()*-2.0-1.0, (rand::random::<f32>()-1.0)*3.0+1.0];
+                    ball_vel = [rand::random::<f32>()*-2.0-3.0, (rand::random::<f32>()-1.0)*5.0+1.0];
                 }
 
                 if ball_exact_pos[0] > (constants::WINDOW_WIDTH - BALL_SIZE) as f32 {
                     mut_g_s.scores[0] = mut_g_s.scores[0]+1;
                     scored = true;
-                    ball_vel = [rand::random::<f32>()*2.0+1.0, (rand::random::<f32>()-1.0)*3.0+1.0];
+                    ball_vel = [rand::random::<f32>()*2.0+3.0, (rand::random::<f32>()-1.0)*5.0+1.0];
                 }
 
                 if ball_exact_pos[1] <= 0.0 || ball_exact_pos[1] > (constants::WINDOW_HEIGHT-BALL_SIZE) as f32 {
